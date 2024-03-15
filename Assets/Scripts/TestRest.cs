@@ -4,6 +4,7 @@ using UnityEngine;
 using Models;
 using Proyecto26;
 using SimpleJSON;
+using System.Linq;
 
 
 public class TestRest : MonoBehaviour
@@ -13,8 +14,9 @@ public class TestRest : MonoBehaviour
     void Start()
     {
       
-      Debug.Log("Hello world!");
-      GETLDH();
+      Debug.Log("Start!");
+        //GETLDH();
+        TestValueEmotion();
     }
 
     // Update is called once per frame
@@ -31,6 +33,26 @@ public class TestRest : MonoBehaviour
 		.Then(res => this.LogMessage ("Success", JsonUtility.ToJson(res, true)))
 		.Catch(err => this.LogMessage ("Error", err.Message));
 	}
+
+    public void TestValueEmotion()
+    {
+        RequestHelper rh = new RequestHelper
+        {
+            Uri = "http://150.146.211.34:8080/predict",
+            Method = "GET",
+            Headers = new Dictionary<string, string> {
+          { "Accept", "application/json" }
+        },
+            Params = new Dictionary<string, string> {
+          { "txt", "I feel surprise" }
+        }
+        };
+
+        RestClient.Request(rh)
+            .Then(res => this.Log("Success", res))
+            .Catch(err => this.LogMessage("Error", err.Message));
+    }
+
 
   public void GETLDH(){
     RequestHelper rh = new RequestHelper { 
@@ -79,6 +101,9 @@ public class TestRest : MonoBehaviour
     string js = JsonUtility.ToJson(o, true);
     Debug.Log(js);
     var obj = JSON.Parse(o.Text);
+
+    bool lastword = obj["Emotion"].ToString().Contains("surprise");
+    Debug.Log(" Lastword is:" + lastword+"-");
 
     Debug.Log(obj["head"]);
     Debug.Log(obj["head"]["vars"]);
